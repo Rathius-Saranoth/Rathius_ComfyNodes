@@ -98,4 +98,4 @@ function textUploadWidget(node, inputName, inputData, app) {
 }
 
 // Register our new "TEXTUPLOAD" widget with ComfyUI
-app.registerWidget("TEXTUPLOAD", textUploadWidget);
+app.registerWidgetType("TEXTUPLOAD", textUploadWidget);
