@@ -1,4 +1,4 @@
-import { app } from "../../../scripts/app.js";
+import { app } from "/scripts/app.js";
 
 // This file just needs to register the new widget type
 function textUploadWidget(node, inputName, inputData, app) {
@@ -98,4 +98,4 @@ function textUploadWidget(node, inputName, inputData, app) {
 }
 
 // Register our new "TEXTUPLOAD" widget with ComfyUI
-app.registerWidgetType("TEXTUPLOAD", textUploadWidget);
+app.registerWidget("TEXTUPLOAD", textUploadWidget);
