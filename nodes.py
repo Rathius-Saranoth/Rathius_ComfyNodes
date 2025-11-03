@@ -1,61 +1,66 @@
+# Required boilerplate for ComfyUI custom nodes.
+# - class LoadTextFile: - "Hello, I am a new node."
+# - INPUT_TYPES - "Here is the form for the inputs I need."
+# - RETURN_TYPES - "Here is what I will give back."
+# - FUNCTION - "This is the name of the function that does the actual work."
+# - CATEGORY - "Put me in this menu, please."
+# - load_text(self, ...) - "I am the actual function that does the work."
+# - NODE_CLASS_MAPPINGS - "This is the official registration form."
+
+# Import any necessary modules
 import os
 import folder_paths
+import hashlib
 
-# --- The Node Class ---
-class LoadTextFile:
-    """
-    A node that loads text from a file.
-    It uses a custom widget to upload a .txt file.
-    """
-    
+# Here you are naming your node class
+class LoadTextFile_Rathius:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
-                # This string "image" MUST match the name in the
-                # FormData.append("image", file) in the JS.
-                # It tells ComfyUI to use our new "TEXTUPLOAD" widget.
-                "image": ("TEXTUPLOAD", ) 
+                # This is just a placeholder text box. 
+                # Our JS will find this widget by its name ("file_name") 
+                # and replace it with an upload button.
+                "file_name": ("STRING", {"default": "example.txt", "multiline": False}),
             }
         }
-
-    # What the node will output
+    
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("text",)
-
-    # The function that runs when the node is executed
     FUNCTION = "load_text"
+    CATEGORY = "RathiusNodes/Utils"
 
-    # The category in the right-click menu
-    CATEGORY = "Rathius_ComfyNodes/Utils"
-    
-    # We don't want this node to run on file load, only when queued
-    def IS_CHANGED(self, **kwargs):
-        return float("inf")
-
-    def load_text(self, image):
-        # 'image' is the filename (e.g., "my_prompt.txt")
-        # The widget has already uploaded it to the 'input' folder.
-        file_path = os.path.join(folder_paths.get_input_directory(), image)
-        
+    @classmethod
+    def IS_CHANGED(cls, file_name):
+        # This re-runs the node if the file name changes
         try:
-            # Open and read the file
+            file_path = folder_paths.get_annotated_filepath(file_name)
+        except:
+            # File doesnt exist yet
+            return float("inf")
+        
+        m = hashlib.sha256()
+        with open(file_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+    
+    def load_text(self, file_name):
+        # This function is more robust. It searches in all known input folders.
+        try:
+            file_path = folder_paths.get_annotated_filepath(file_name)
             with open(file_path, 'r', encoding='utf-8') as f:
                 text_content = f.read()
-            
-            # Return the text content as a tuple
             return (text_content, )
-            
         except Exception as e:
             print(f"[LoadTextFile] Error: {e}")
-            return (f"Error loading file: {e}", )
+            # Return the error message as a string so it can be debugged
+            return (f"Error: {e}", )
 
 # --- Node Registration ---
 NODE_CLASS_MAPPINGS = {
-    "LoadTextFile_Rathius": LoadTextFile
+    "LoadTextFile_Rathius": LoadTextFile_Rathius
 }
 
-# I updated the display name to reflect its new function
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LoadTextFile_Rathius": "Load Text from File (Upload)"
 }
