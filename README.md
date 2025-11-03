@@ -8,3 +8,7 @@ For example, the first node is simply a text loader. Pick and choose the text fi
 
 ## Future thoughts(?)
 I'm hoping to make a personal repository of quality of life type nodes for ComfyUI that make me scratch my head at why the don't exist in the base program.
+
+###
+Credits:
+Rathius & Evelyn
